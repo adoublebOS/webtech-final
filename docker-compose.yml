@@ -1,18 +1,29 @@
 services:
   db:
-    image: bitnami/postgresql:10.20.0-debian-10-r52
     restart: always
+    image: bitnami/postgresql:10.20.0-debian-10-r52
     ports:
       - $POSTGRES_PORT:5432
     env_file:
       - ./.env
 
   web:
+    restart: always
     build:
       context: ./web/
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - "11440:11440"
     environment:
       TZ: "Asia/Tashkent"
+    depends_on:
+      - db
+
+  nginx:
     restart: always
+    build:
+      context: ./nginx/
+    ports:
+      - "80:80"
+    depends_on:
+      - web
